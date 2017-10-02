@@ -1,0 +1,20 @@
+{
+  "name": "xhr-post-example",
+  "version": "1.0.0",
+  "description": "An example of how to send POST Request to Server in Node.js",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acucciniello/xhr-post-example.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/acucciniello/xhr-post-example/issues"
+  },
+  "homepage": "https://github.com/acucciniello/xhr-post-example#readme"
+}
