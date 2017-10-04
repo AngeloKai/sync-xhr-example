@@ -3,22 +3,33 @@
     <h1>
     XHR POST to Server
     </h1>
-    <body>
-      <input type='text' id='num' />
+      <input type='text' id='num' /> seconds  
+      <button type='button' value='Send' name='Send' onclick='send()' >Send</button>
+      <div id="returned" style="display: none">XHR is returned</div>
       <script>
         function send () {
-          var number = {
-            value: document.getElementById('num').value
-          }
-          var xhr = new window.XMLHttpRequest()
-          xhr.open('POST', '/num', false)
-          xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
-          xhr.send(JSON.stringify(number))
+
+          // Remove the comment on the below code and comment out the existing code to observe the error message.
+          // var xhr = new XMLHttpRequest();
+          // xhr.responseType = 'arraybuffer';
+          // xhr.open('GET', '/', false); // sync request
+          // xhr.send();
+  
+
+          // var returnedText = document.getElementById('returned');
+  
+          // var number = {
+          //   value: document.getElementById('num').value
+          // }
+          // var xhr = new window.XMLHttpRequest()
+          // xhr.open('POST', '/num', false)
+          // xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+          // xhr.send(JSON.stringify(number))
+  
+          // if (xhr.readyState == 4) {
+          //   returnedText.style.display = 'block';
+          // }
         }
       </script>
-      <button type='button' value='Send' name='Send' onclick='send()' >
-        Send
-      </button>
-    </body>
   </html>
 
