@@ -1,36 +1,121 @@
 <!doctype html>
-  <html>
-    <h1>
-    XHR POST to Server
-    </h1>
-    <div>See <a href="https://github.com/AngeloKai/sync-xhr-example">here</a> for the source code</div>
-      <input type='text' id='num' /> seconds  
-      <button type='button' value='Send' name='Send' onclick='send()' >Send</button>
-      <div id="returned" style="display: none">XHR is returned</div>
-      <script>
-        function send () {
+<html>
+  <h1>
+  XHR POST to Server
+  </h1>
+  <div>See <a href="https://github.com/AngeloKai/sync-xhr-example">here</a> for the source code</div> 
+  <br>
+  Test for Sending Regular Sync XHR:   
+  <input type='text' id='num' /> seconds  
+    <button type='button' value='Send' name='Send' onclick='send()' >Send</button>
+    <div id="returned" style="display: none">Regular Sync XHR is returned</div>
+  <br><br>
 
-          // Remove the comment on the below code and comment out the existing code to observe the error message.
-          // var xhr = new XMLHttpRequest();
-          // xhr.responseType = 'arraybuffer';
-          // xhr.open('GET', '/', false); // sync request
-          // xhr.send();
-  
+  Test for Sending Sync XHR in Worker Thread:
+  <input type='text' id='worker-num'/> seconds 
+  <button type='button' value='Send' name='Send' onclick='workerSend()' >Send</button>
+  <div id="worker-returned" style="display: none">Worker thread Sync XHR is returned</div>
+  <br><br>
 
-          var returnedText = document.getElementById('returned');
+  Test for Sending Sync XHR with timeout (open F12 console to observe InvalidAccessError in Edge): 
+  <input type='text' id='timeout-num'/> seconds 
+  <button type='button' value='Send' name='Send' onclick='timeoutErrorSend()' >Send</button>
+  <div id="timeout-returned" style="display: none">Timeout Error Sync XHR is returned (should never happen)</div>
+  <br><br>
+
+  Test for Sending Sync XHR with responseType='arraybuffer' (open F12 console to observe InvalidAccessError in Edge): 
+  <input type='text' id='responseType-num'/> seconds 
+  <button type='button' value='Send' name='Send' onclick='responseTypeErrSend()' >Send</button>
+  <div id="responseError-returned" style="display: none">ResponseType Sync XHR is returned (should never happen)</div>
+  <br><br>
+
+  BE CAREFUL WHEN USE THE FOLLOWING: 
+  <br>
+  Set a number for how long Sync XHR hangs before unload (default is 0): 
+  <input type='text' value='0' id='unload-num'/> seconds
+  <button type='button' value='Set' name='Set' onclick="setUnloadHang()">Set</button>
+  <div id="unloadHange-set" style="display: none">Unload number is set</div>
+  <div id="unload-returned" style="display: none">Unload sync xhr is returned</div>
   
-          var number = {
-            value: document.getElementById('num').value
-          }
-          var xhr = new window.XMLHttpRequest()
-          xhr.open('POST', '/num', false)
-          xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
-          xhr.send(JSON.stringify(number))
-  
-          if (xhr.readyState == 4) {
-            returnedText.style.display = 'block';
-          }
+  <script>
+    var unloadHang = 0; 
+
+    function setUnloadHang() {
+      unloadHang = document.getElementById('unload-num').value;
+      var returnedText = document.getElementById('unloadHange-set');
+      returnedText.style.display = 'block';
+    }
+
+    window.addEventListener('unload', hangUnload, false);
+
+    function hangUnload() {
+
+      var returnedText = document.getElementById('unload-returned');
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/num', false);
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+      var jsonNum = {value: unloadHang};
+
+      xhr.send(JSON.stringify(jsonNum));
+
+      if (xhr.readyState == 4) {
+        returnedText.style.display = 'block';
+      }
+    }
+
+    function send () {
+
+      var returnedText = document.getElementById('returned');
+
+      var number = {value: document.getElementById('num').value};
+      
+      var xhr = new window.XMLHttpRequest()
+      xhr.open('POST', '/num', false)
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.send(JSON.stringify(number))
+
+      if (xhr.readyState == 4) {
+        returnedText.style.display = 'block';
+      }
+    }
+
+    function workerSend() {
+
+      var returnedText = document.getElementById('worker-returned');
+
+      var worker = new Worker('xhr.js');
+      var number = {value: document.getElementById('worker-num').value};
+      worker.onmessage = function (event) {
+        console.log('Worker said: ' + event.data);
+
+        if (event.data == 'responded') {
+          returnedText.style.display = 'block';
         }
-      </script>
-  </html>
+      }
+
+      console.log(number);
+      worker.postMessage(number);
+    }
+
+    function timeoutErrorSend() {
+      var number = {value: document.getElementById('timeout-num').value};
+      var xhr = new XMLHttpRequest();
+      xhr.timeout = 3000; 
+      xhr.open('POST', '/num', false)
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.send(JSON.stringify(number))
+    }
+
+    function responseTypeErrSend() {
+      var number = {value: document.getElementById('responseType-num').value};
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'arraybuffer';
+      xhr.open('POST', '/num', false)
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.send(JSON.stringify(number))
+    }
+  </script>
+</html>
 

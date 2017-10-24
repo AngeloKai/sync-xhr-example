@@ -13,8 +13,20 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'))
+
+  if (req.originalUrl == '/xhr.js') {
+    res.sendFile(path.join(__dirname, '/xhr.js'))
+  } else {
+    res.sendFile(path.join(__dirname, '/index.html'))
+  }
+
+  //console.log(req);
+
 })
+
+// app.get('/xhr.js', function (req, res) {
+//   res.sendFile(path.join(__dirname), 'xhr.js');
+// })
 
 app.post('/num', function (req, res) {
   var num = req.body.value
